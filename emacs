@@ -1,7 +1,4 @@
 (load-file "~/.emacs.d/plugins/google-c-style.el")
-(load-file "~/.emacs.d/plugins/lua-mode.el")
-(load-file "~/.emacs.d/plugins/flex-mode.el")
-(load-file "~/.emacs.d/plugins/bison-mode/bison-mode.el")
 (require 'google-c-style)
 (add-hook 'c-mode-common-hook 'google-set-c-style)
 (add-hook 'c-mode-common-hook 'google-make-newline-indent)
