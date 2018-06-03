@@ -2,14 +2,15 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
-xrandr --output DVI-0 --auto --right-of VGA-0
-
 # If not running interactively, don't do anything
-[ -z "$PS1" ] && return
+case $- in
+    *i*) ;;
+      *) return;;
+esac
 
-# don't put duplicate lines in the history. See bash(1) for more options
-# ... or force ignoredups and ignorespace
-HISTCONTROL=ignoredups:ignorespace
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
 
 # append to the history file, don't overwrite it
 shopt -s histappend
@@ -22,17 +23,21 @@ HISTFILESIZE=2000
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color) color_prompt=yes;;
+    xterm-color|*-256color) color_prompt=yes;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -79,6 +84,9 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
 # some more ls aliases
 alias ll='ls -alF'
 alias la='ls -A'
@@ -100,25 +108,24 @@ fi
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
-if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
+  fi
 fi
 
-export PATH=~/big/bin:$PATH
-export PATH=~/big/bin/dex2jar:$PATH
-export PATH=~/big/bin/patch-tool/tools:$PATH
-export PATH=~/big/bin/arm-tool/bin:$PATH
-export PATH=~/big/tool/android-sdk-linux/platform-tools:$PATH
-export PATH=~/big/tool/android-sdk-linux/tools:$PATH
-export PATH=~/big/bin/jd-gui:$PATH
+####################################
+# go
+export PATH=$PATH:/usr/local/go/bin
+# android
+export ANDROID_JACK_VM_ARGS="-Dfile.encoding=UTF-8 -XX:+TieredCompilation -Xmx4g"
 
-export NDK_HOME=~/big/tool/android-ndk-r8
-export PATH=$NDK_HOME:$PATH
-export PATH=~/big/bin/arm-none-eabi-4.7.3/bin:$PATH
-export PATH=~/big/bin/arm-none-linux-gnueabi-4.7.3/bin:$PATH
-export PATH=~/big/bin/arm-eabi-4.8/bin:$PATH
-export PATH=~/big/bin/arm-linux-androideabi-4.8/bin:$PATH
-export PATH=~/big/bin/gcc-1.40/local/bin:$PATH
-export PATH=~/big/bin/devtools:$PATH
+####################################
+PATH=~/bin:$PATH
+PATH=~/bin/idea-IU-181.4445.78/bin:$PATH
+PATH=~/bin/apache-maven-3.5.3-bin/apache-maven-3.5.3/bin:$PATH
 
-export PATH=~/big/tool/android-studio/android-studio/bin:$PATH
+alias vpn='/opt/cisco/anyconnect/bin/vpn'
+alias vpnui='/opt/cisco/anyconnect/bin/vpnui'
